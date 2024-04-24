@@ -53,6 +53,28 @@ def test_circle_node_evaluation():
 
 def test_transform_node_translation():
     point_node = PointNode((1, 1))
-    transform_node = TransformNode(point_node, 'translate', xoff=10, yoff=5)
-    translated_point = transform_node.evaluate()[0]
-    assert translated_point.x == 11 and translated_point.y == 6, "TransformNode does not correctly translate points."
+    transform_node = TransformNode(point_node, operation='translate', x = 10, y = 5)
+
+    transform_node.evaluate()
+    assert point_node.evaluate().x == 11 and point_node.evaluate().y == 6, "TransformNode does not correctly translate points."
+
+def test_transform_node_rotation():
+    polygon_node = PolygonNode([(0,0), (1, 1), (1, 0)])
+    transform_node = TransformNode(polygon_node, operation='rotate', angle = 90, origin=(0,0))
+
+    transform_node.evaluate()
+    assert list(polygon_node.evaluate().exterior.coords) == [(0, 0), (-1, 1), (0, 1), (0, 0)], "TransformNode does not correctly rotate polygon."
+
+def test_transform_node_scale():
+    polygon_node = PolygonNode([(0,0), (1, 1), (1, 0)])
+    transform_node = TransformNode(polygon_node, operation='scale', factor = 2, origin=(0,0))
+
+    transform_node.evaluate()
+    assert list(polygon_node.evaluate().exterior.coords) == [(0, 0), (2, 2), (2, 0), (0, 0)], "TransformNode does not correctly scale polygon."
+
+def test_transform_node_scale_dict():
+    polygon_node = PolygonNode([(0,0), (1, 1), (1, 0)])
+    transform_node = TransformNode(polygon_node, operation='scale', kwargs={"factor": 2, "origin": (0,0)})
+
+    transform_node.evaluate()
+    assert list(polygon_node.evaluate().exterior.coords) == [(0, 0), (2, 2), (2, 0), (0, 0)], "TransformNode does not correctly scale polygon."
